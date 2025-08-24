@@ -16,7 +16,7 @@ export default function Signup() {
     e.preventDefault();
     setLoading(true); // loader start
     try {
-      const res = await axios.post("http://localhost:5000/api/auth/register", form);
+      const res = await axios.post("https://habit-tracker-backend-vitw.onrender.com/api/auth/register", form);
 
       setMessage(res.data.message);
       localStorage.setItem("token", res.data.token); // save token

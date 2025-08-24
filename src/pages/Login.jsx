@@ -18,7 +18,7 @@ export default function Login() {
     setMessage("");
 
     try {
-      const res = await axios.post("http://localhost:5000/api/auth/login", form);
+      const res = await axios.post("https://habit-tracker-backend-vitw.onrender.com/api/auth/login", form);
 
       setMessage(res.data.message);
       localStorage.setItem("token", res.data.token); // save JWT token

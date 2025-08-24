@@ -26,7 +26,7 @@ import HabitRow from "./components/HabitRow.jsx";
 import ChartsPanel from "./components/ChartsPanel.jsx";
 import useFilteredSortedHabits from "./hooks/useFilteredSortedHabits.js";
 
-  function HabitDashboard() {
+function HabitDashboard() {
   const [habits, setHabits] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
@@ -42,19 +42,22 @@ import useFilteredSortedHabits from "./hooks/useFilteredSortedHabits.js";
     setError("");
     try {
       const token = localStorage.getItem("token");
-      const res = await axios.get("http://localhost:5000/api/habits", {
-        headers: { Authorization: `Bearer ${token}` },
-      });
-      console.log(res)
+      const res = await axios.get(
+        "https://habit-tracker-backend-vitw.onrender.com/api/habits",
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        }
+      );
+      // console.log(res)
       setHabits(res.data.habits); // assuming API returns array of habits
     } catch (err) {
-      console.log(err)
+      console.log(err);
       setError(err.response?.data?.message || "Error fetching habits");
     } finally {
       setLoading(false);
     }
   };
-
+  console.log(filtered);
   useEffect(() => {
     fetchHabits();
   }, []);
@@ -66,9 +69,13 @@ import useFilteredSortedHabits from "./hooks/useFilteredSortedHabits.js";
     setError("");
     try {
       const token = localStorage.getItem("token");
-      const res = await axios.post("http://localhost:5000/api/habits", data, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
+      const res = await axios.post(
+        "https://habit-tracker-backend-vitw.onrender.com/api/habits",
+        data,
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        }
+      );
       setHabits((prev) => [...prev, res.data]); // add new habit
     } catch (err) {
       setError(err.response?.data?.message || "Error adding habit");
@@ -102,9 +109,9 @@ import useFilteredSortedHabits from "./hooks/useFilteredSortedHabits.js";
       ) : habits.length ? (
         <>
           <div className="grid md:grid-cols-2 gap-4">
-            {filtered?.map((h) => (
-              <HabitRow key={h._id || h.id} habit={h} />
-            ))}
+            {filtered.length > 0
+              ? filtered
+              : habits?.map((h) => <HabitRow key={h._id || h.id} habit={h} />)}
           </div>
           <ChartsPanel />
         </>
@@ -121,7 +128,7 @@ export default function App() {
       <div className="min-h-screen text-white bg-gradient-to-b from-[#0b0b10] to-[#121218]">
         <Routes>
           <Route path="/" element={<Home />} />
-                    <Route path="/dashboard" element={<HabitDashboard />} />
+          <Route path="/dashboard" element={<HabitDashboard />} />
           <Route path="/login" element={<Login />} />
           <Route path="/singup" element={<Signup />} />
         </Routes>

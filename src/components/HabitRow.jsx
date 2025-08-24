@@ -44,7 +44,7 @@ console.log(habit)
     setError("");
     try {
       const res = await axios.patch(
-        `http://localhost:5000/api/habits/${habit._id}`,
+        `https://habit-tracker-backend-vitw.onrender.com/api/habits/${habit._id}`,
         { archived: !habit.archived },
         { headers: { Authorization: `Bearer ${token}` } }
       );
@@ -61,7 +61,7 @@ console.log(habit)
     setLoading(true);
     setError("");
     try {
-      await axios.delete(`http://localhost:5000/api/habits/${habit._id}`, {
+      await axios.delete(`https://habit-tracker-backend-vitw.onrender.com/api/habits/${habit._id}`, {
         headers: { Authorization: `Bearer ${token}` },
       });
       onUpdate(null, habit._id);
