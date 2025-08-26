@@ -69,7 +69,7 @@ store.subscribe(() => {
 const s = store.getState();
 if (snapshot !== s) {
 snapshot = s;
-api.save({ habits: s.habits, progress: s.progress });
+api.save({ habits: s.habits, progress: s.progress });
 }
 });
 };

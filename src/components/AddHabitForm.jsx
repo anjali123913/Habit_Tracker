@@ -1,7 +1,7 @@
 import { useState } from "react";
 import axios from "axios";
 
-export default function AddHabitForm() {
+export default function AddHabitForm({setAdding}) {
   const [name, setName] = useState("");
   const [description, setDescription] = useState("");
   const [frequency, setFrequency] = useState("daily");
@@ -26,11 +26,12 @@ export default function AddHabitForm() {
     try {
       const token = localStorage.getItem("token"); // JWT token
       const res = await axios.post(
-        "http://localhost:5000/api/habits",
+        "https://habit-tracker-backend-vitw.onrender.com/api/habits",
         { title:name, description, frequency, startDate, category, reminder },
         { headers: { Authorization: `Bearer ${token}` } }
       );
 console.log(res)
+setAdding(false)
       setMessage("Habit added successfully!");
       // Reset form
       setName("");

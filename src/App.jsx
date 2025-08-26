@@ -1,88 +1,102 @@
-import React, { useEffect, useState } from "react";
-import { useDispatch, useSelector } from "react-redux";
+import React, { useEffect, useState, useCallback } from "react";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import axios from "axios";
 
-// import Header from "./components/Header.jsx";
-// import AddHabitForm from "./components/AddHabitForm.jsx";
-// import Toolbar from "./components/Toolbar.jsx";
-// import EmptyState from "./components/EmptyState.jsx";
-// import HabitRow from "./components/HabitRow.jsx";
-// import ChartsPanel from "./components/ChartsPanel.jsx";
-// import useLoadState from "./hooks/useLoadState.js";
-// import useFilteredSortedHabits from "./hooks/useFilteredSortedHabits.js";
-// import { addHabit } from "./store/habitsSlice.js";
-
+// Pages
 import Login from "./pages/Login.jsx";
 import Signup from "./pages/Signup.jsx";
 import Home from "./pages/Home.jsx";
 
-// import React, { useState, useEffect } from "react";
-import axios from "axios";
+// Components
 import Header from "./components/Header.jsx";
 import AddHabitForm from "./components/AddHabitForm.jsx";
 import Toolbar from "./components/Toolbar.jsx";
 import EmptyState from "./components/EmptyState.jsx";
 import HabitRow from "./components/HabitRow.jsx";
 import ChartsPanel from "./components/ChartsPanel.jsx";
+
+// Hooks
 import useFilteredSortedHabits from "./hooks/useFilteredSortedHabits.js";
 
-  function HabitDashboard() {
+function HabitDashboard() {
   const [habits, setHabits] = useState([]);
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(true); // list load ke liye
+  const [adding, setAdding] = useState(true); // add habit ke liye
   const [error, setError] = useState("");
+
   const [q, setQ] = useState("");
   const [status, setStatus] = useState("all");
   const [sortBy, setSortBy] = useState("created");
 
+  const handleUpdateHabit = (updatedHabit, deletedId) => {
+    if (deletedId) {
+      setHabits((prev) => prev.filter((h) => h._id !== deletedId));
+    } else {
+      setHabits((prev) =>
+        prev.map((h) => (h._id === updatedHabit._id ? updatedHabit : h))
+      );
+    }
+  };
+
   const filtered = useFilteredSortedHabits({ q, status, sortBy, habits });
 
-  // Fetch habits from API
+  // ✅ Fetch habits from API
   const fetchHabits = async () => {
     setLoading(true);
     setError("");
     try {
       const token = localStorage.getItem("token");
-      const res = await axios.get("http://localhost:5000/api/habits", {
-        headers: { Authorization: `Bearer ${token}` },
-      });
-      console.log(res)
-      setHabits(res.data.habits); // assuming API returns array of habits
+      const res = await axios.get(
+        "https://habit-tracker-backend-vitw.onrender.com/api/habits",
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
+      setHabits(res.data.habits || []);
     } catch (err) {
-      console.log(err)
+      console.error(err);
       setError(err.response?.data?.message || "Error fetching habits");
     } finally {
       setLoading(false);
     }
   };
 
-  useEffect(() => {
-    fetchHabits();
-  }, []);
-
-  // Add habit
-  const onAdd = async (data) => {
+  // ✅ Add habit
+  const onAdd = useCallback(async (data) => {
     if (!data.name?.trim()) return;
-    setLoading(true);
+    setAdding(true);
     setError("");
     try {
       const token = localStorage.getItem("token");
-      const res = await axios.post("http://localhost:5000/api/habits", data, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
-      setHabits((prev) => [...prev, res.data]); // add new habit
+      const res = await axios.post(
+        "https://habit-tracker-backend-vitw.onrender.com/api/habits",
+        data,
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
+console.log(res)
+      // ✅ Optimistic update (turant UI update)
+      setHabits((prev) => [...prev, res.data]);
+
+      // ✅ Background me latest list fetch
+      fetchHabits();
     } catch (err) {
+      console.error(err);
       setError(err.response?.data?.message || "Error adding habit");
     } finally {
-      setLoading(false);
+      setAdding(false);
     }
-  };
+  }, []);
+
+  // ✅ Initial load
+  useEffect(() => {
+    fetchHabits();
+  }, [setAdding,adding]);
 
   return (
     <div className="max-w-6xl mx-auto px-3 sm:px-4 md:px-6 lg:px-8 py-6 md:py-8 space-y-6">
       <Header />
 
       <section className="p-4 rounded-2xl bg-white/5 border border-white/10 space-y-4">
-        <AddHabitForm onAdd={onAdd} />
+        {/* ✅ ab AddHabitForm ko direct onAdd aur adding pass ho raha hai */}
+        <AddHabitForm setAdding={setAdding} />
         <Toolbar
           q={q}
           setQ={setQ}
@@ -102,11 +116,15 @@ import useFilteredSortedHabits from "./hooks/useFilteredSortedHabits.js";
       ) : habits.length ? (
         <>
           <div className="grid md:grid-cols-2 gap-4">
-            {filtered?.map((h) => (
-              <HabitRow key={h._id || h.id} habit={h} />
+            {(filtered.length > 0 ? filtered : habits).map((h) => (
+              <HabitRow
+                key={h._id || h.id}
+                habit={h}
+                onUpdate={handleUpdateHabit}
+              />
             ))}
           </div>
-          <ChartsPanel />
+          <ChartsPanel  habits={habits}/>
         </>
       ) : (
         <EmptyState />
@@ -121,11 +139,11 @@ export default function App() {
       <div className="min-h-screen text-white bg-gradient-to-b from-[#0b0b10] to-[#121218]">
         <Routes>
           <Route path="/" element={<Home />} />
-                    <Route path="/dashboard" element={<HabitDashboard />} />
+          <Route path="/dashboard" element={<HabitDashboard />} />
           <Route path="/login" element={<Login />} />
-          <Route path="/singup" element={<Signup />} />
+          <Route path="/signup" element={<Signup />} />
         </Routes>
       </div>
     </Router>
-  );
+  );
 }
