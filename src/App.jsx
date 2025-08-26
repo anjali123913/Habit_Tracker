@@ -141,7 +141,7 @@ export default function App() {
           <Route path="/" element={<Home />} />
           <Route path="/dashboard" element={<HabitDashboard />} />
           <Route path="/login" element={<Login />} />
-          <Route path="/signup" element={<Signup />} />
+          <Route path="/singup" element={<Signup />} />
         </Routes>
       </div>
     </Router>

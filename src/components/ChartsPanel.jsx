@@ -15,28 +15,6 @@ import {
 } from "recharts";
 
 // ----------------------------
-// 🔹 Example hardcoded habits data
-// ----------------------------
-// const habits = [
-//   {
-//     title: "Clock tower of Lucknow",
-//     customDays: [
-//       1753747200000,
-//       1753920000000,
-//       1756166400000,
-//       1756252800000,
-//       1753833600000,
-//     ],
-//   },
-//   {
-//     title: "Morning Walk",
-//     customDays: [1753920000000, 1756166400000, 1756252800000],
-//   },
-// ];
-
-
-
-// ----------------------------
 // 🔹 Utility: last N dates
 // ----------------------------
 function lastNDates(n) {
@@ -53,16 +31,18 @@ function lastNDates(n) {
 // ----------------------------
 // 🔹 Chart Panel Component
 // ----------------------------
-export default function ChartsPanel({habits}) {
-
-
-
-  
-  // Helper: convert timestamps → yyyy-mm-dd
+export default function ChartsPanel({ habits }) {
+  // -------------------------------
+  // Helper: convert timestamps OR ISO strings → yyyy-mm-dd
+  // -------------------------------
   const normalizeDays = (habit) =>
-    (habit.customDays || []).map((ts) =>
-      new Date(Number(ts)).toISOString().slice(0, 10)
-    );
+    (habit.customDays || [])
+      .map((ts) => {
+        const d = new Date(ts); // ✅ handle both ISO string & timestamp
+        if (isNaN(d)) return null;
+        return d.toISOString().slice(0, 10);
+      })
+      .filter(Boolean);
 
   // -------------------------------
   // Line Chart (last 14 days)
@@ -114,7 +94,7 @@ export default function ChartsPanel({habits}) {
   // Render
   // -------------------------------
   return (
-    <div className="grid lg:grid-cols-1 gap-4">
+    <div className="grid lg:grid-cols-2 gap-4">
       {/* Line Chart */}
       <div className="p-4 rounded-2xl bg-white/5 border border-white/10">
         <h4 className="font-semibold mb-2">📈 Completions (last 14 days)</h4>
@@ -169,7 +149,7 @@ export default function ChartsPanel({habits}) {
               <Bar dataKey="pct">
                 {barData.map((entry, index) => (
                   <Cell
-                    key={`cell-${index}`}
+                    key={`${index}`}
                     fill={entry.pct >= 50 ? "#4ade80" : "#f87171"} // ✅ green/red
                   />
                 ))}
@@ -223,4 +203,4 @@ export default function ChartsPanel({habits}) {
       </div>
     </div>
   );
-} 
+}
