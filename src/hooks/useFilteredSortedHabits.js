@@ -6,7 +6,7 @@ import { computeStreak } from "../utils/statsUtils.js";
 const selectHabits = (s) => s.habits; const selectProgress = (s) => s.progress;
 
 
-export default function useFilteredSortedHabits({ q, status, sortBy, }) {
+export default function useFilteredSortedHabits({ q, status, sortBy }) {
     const habits = useSelector(selectHabits);
     const progress = useSelector(selectProgress);
     return useMemo(() => {

@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import axios from "axios";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 
 export default function Signup() {
   const [form, setForm] = useState({ name: "", email: "", password: "" });
@@ -81,7 +81,7 @@ export default function Signup() {
             "Signup"
           )}
         </button>
-
+<p className="text-center py-1 text-sm">I have already an account <Link to={"/login"}className="text-blue-500 underline">Login</Link></p>
         {message && <p className="mt-4 text-center">{message}</p>}
       </form>
     </div>

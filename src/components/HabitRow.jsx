@@ -29,7 +29,7 @@ function TrashIcon({ className }) {
   );
 }
 
-export default function HabitRow({ habit, onUpdate }) {
+export default function HabitRow({ habit ,onUpdate}) {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
 console.log(habit)
@@ -61,11 +61,13 @@ console.log(habit)
     setLoading(true);
     setError("");
     try {
-      await axios.delete(`https://habit-tracker-backend-vitw.onrender.com/api/habits/${habit._id}`, {
+    let res=  await axios.delete(`https://habit-tracker-backend-vitw.onrender.com/api/habits/${habit._id}`, {
         headers: { Authorization: `Bearer ${token}` },
       });
+      console.log(res);
       onUpdate(null, habit._id);
     } catch (err) {
+      console.log(err)
       setError(err.response?.data?.message || "Error deleting habit");
     } finally {
       setLoading(false);
@@ -99,7 +101,8 @@ console.log(habit)
       </div>
 
       <div className="mt-3">
-        <MiniCalendar habitId={habit._id} map={map} />
+        <MiniCalendar habit={habit} habitId={habit._id} map={map} onUpdate={onUpdate} />
+
       </div>
 
       <div className="mt-3 flex flex-wrap items-center gap-2">

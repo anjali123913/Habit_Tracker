@@ -34,7 +34,7 @@ export default function Home() {
 
       {/* Get Started Button */}
       <button
-        onClick={() => navigate("/singup")}
+        onClick={() => navigate("/signup")}
         className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-xl text-lg font-semibold transition"
       >
         Get Started

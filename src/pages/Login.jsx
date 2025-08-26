@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import axios from "axios";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 
 export default function Login() {
   const [form, setForm] = useState({ email: "", password: "" });
@@ -18,7 +18,10 @@ export default function Login() {
     setMessage("");
 
     try {
-      const res = await axios.post("https://habit-tracker-backend-vitw.onrender.com/api/auth/login", form);
+      const res = await axios.post(
+        "https://habit-tracker-backend-vitw.onrender.com/api/auth/login",
+        form
+      );
 
       setMessage(res.data.message);
       localStorage.setItem("token", res.data.token); // save JWT token
@@ -73,8 +76,13 @@ export default function Login() {
             "Login"
           )}
         </button>
-
-        {message && <p className="mt-4 text-center">{message}</p>}
+        <p className="text-center py-1 text-sm">
+          I have not an account{" "}
+          <Link to={"/signup"} className="text-blue-500 underline">
+            Sign Up
+          </Link>
+        </p>
+        {message && <p className="mt-4 text-center text-red-500">{message}</p>}
       </form>
     </div>
   );
